@@ -235,6 +235,10 @@ fazer_requisicao_get()
 ### 3. Experimento 2
 
 
+## 
+A diferença principal entre servidores HTTP com e sem threads é como lidam com requisições simultâneas. Servidores sem threads processam uma requisição de cada vez, o que pode causar atrasos em cargas altas. Já servidores com threads permitem o processamento paralelo, melhorando o desempenho e a capacidade de resposta, mas ao custo de maior complexidade e uso de recursos do sistema. A escolha depende da carga esperada e da complexidade de desenvolvimento que se está disposto a gerenciar.
+
+
 ## Links
 - [http.server — HTTP servers](https://docs.python.org/3/library/http.server.html)
 
