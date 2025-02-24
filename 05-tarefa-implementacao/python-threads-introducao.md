@@ -305,10 +305,103 @@ Escolha uma das formas de implementação em python para o código-fonte 7 e out
 Lembrando as formas: Threads, Pool, ou asyncio.
 
 ### Código-fonte 7: Soma com 4 tarefas
+from concurrent.futures import ThreadPoolExecutor
 
+# Função para ler números de um arquivo texto
+def ler_numeros_do_arquivo(nome_arquivo):
+    with open(nome_arquivo, 'r') as arquivo:
+        numeros = [int(linha.strip()) for linha in arquivo]
+    return numeros
+
+# Função para somar números de uma lista
+def soma_numeros(numeros):
+    return sum(numeros)
+
+# Nome do arquivo
+nome_arquivo = 'numeros_aleatorios.txt'
+
+# Ler os números do arquivo
+numeros = ler_numeros_do_arquivo(nome_arquivo)
+
+# Divide a lista em 4 partes
+tamanho_parte = len(numeros) // 4
+partes = [
+    numeros[i:i + tamanho_parte] for i in range(0, len(numeros), tamanho_parte)
+]
+# Ajusta a última parte para incluir quaisquer elementos restantes
+if len(partes) > 4:
+    partes[3] = partes[3] + partes[4]
+    partes.pop(4)
+
+# Usar ThreadPoolExecutor para gerenciar 4 tarefas
+resultados = [0] * 4
+with ThreadPoolExecutor(max_workers=4) as executor:
+    # Cria 4 tarefas, cada uma com uma parte da lista
+    futuros = [executor.submit(soma_numeros, parte) for parte in partes]
+    # Executa as tarefas e coleta os resultados
+    for i, futuro in enumerate(futuros):
+        resultados[i] = futuro.result()
+
+# Soma o resultado final e imprime
+resultado_final = soma_numeros(resultados)
+print(f"A soma dos números com 4 tarefas é: {resultado_final}")
 
 ### Código-fonte 8: Soma com 10 tarefas
+import threading
 
+# Classe para criar threads que somam números
+class MinhaThread(threading.Thread):
+    def __init__(self, numeros):
+        threading.Thread.__init__(self)
+        self.numeros = numeros
+        self.resultado = 0
+
+    def run(self):
+        self.resultado = soma_numeros(self.numeros)
+
+# Função para ler números de um arquivo texto
+def ler_numeros_do_arquivo(nome_arquivo):
+    with open(nome_arquivo, 'r') as arquivo:
+        numeros = [int(linha.strip()) for linha in arquivo]
+    return numeros
+
+# Função para somar números de uma lista
+def soma_numeros(numeros):
+    return sum(numeros)
+
+# Nome do arquivo
+nome_arquivo = 'numeros_aleatorios.txt'
+
+# Ler os números do arquivo
+numeros = ler_numeros_do_arquivo(nome_arquivo)
+
+# Divide a lista em 10 partes
+tamanho_parte = len(numeros) // 10
+partes = [
+    numeros[i:i + tamanho_parte] for i in range(0, len(numeros), tamanho_parte)
+]
+# Ajusta a última parte para incluir quaisquer elementos restantes
+if len(partes) > 10:
+    partes[9] = partes[9] + partes[10]
+    partes.pop(10)
+
+# Cria 10 threads, cada uma com uma parte da lista
+threads = [MinhaThread(parte) for parte in partes]
+
+# Inicia a execução das threads
+for thread in threads:
+    thread.start()
+
+# Aguarda o término de todas as threads
+for thread in threads:
+    thread.join()
+
+# Recupera os resultados das threads
+resultados = [thread.resultado for thread in threads]
+
+# Soma o resultado final e imprime
+resultado_final = soma_numeros(resultados)
+print(f"A soma dos números com 10 tarefas é: {resultado_final}")
 
 # Links importantes
 - [Python documentation](https://docs.python.org/)
